@@ -9,22 +9,22 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.optimizers import RMSprop
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 
-# °V½m¸ê®Æ
+# è¨“ç·´è³‡æ–™
 train_dir = 'E:/google drive/iii_course/HOT/img_distinct/train/outside'
 test_dir = 'E:/google drive/iii_course/HOT/img_distinct/test/outside'
 
-# ¤ÀÃş¼Æ
+# åˆ†é¡æ•¸
 class_numbers = len(os.listdir(train_dir))
 # print(class_numbers)
-# ³]©wºô¸ôµ²ºc, ¨Ï¥Î¦b imagenet ¤W°V½mªº°Ñ¼Æ§@¬°ªì©l°Ñ¼Æ
-# include_top=False ¤£¨Ï¥Î¹w¥ıªº¤ÀÃş¾¹
+# è¨­å®šç¶²è·¯çµæ§‹, ä½¿ç”¨åœ¨ imagenet ä¸Šè¨“ç·´çš„åƒæ•¸ä½œç‚ºåˆå§‹åƒæ•¸
+# include_top=False ä¸ä½¿ç”¨é å…ˆçš„åˆ†é¡å™¨
 Backbone = InceptionV3(weights='imagenet', include_top=False, input_shape=(299, 299, 3))
 
-Backbone.trainable = True  # ³]©w©Ò¦³¼h¬°¥i°V½m
+Backbone.trainable = True  # è¨­å®šæ‰€æœ‰å±¤ç‚ºå¯è¨“ç·´
 
-set_trainable = False   # ­áµ²¥¬ªLÅÜ¼Æ
+set_trainable = False   # å‡çµå¸ƒæ—è®Šæ•¸
 
-# 249¼h¥H«e¥ş³¡­áµ², ¥u·L½Õ°V½m249¼h¤§«á
+# 249å±¤ä»¥å‰å…¨éƒ¨å‡çµ, åªå¾®èª¿è¨“ç·´249å±¤ä¹‹å¾Œ
 for layer in Backbone.layers[:249]:
    layer.trainable = False
 for layer in Backbone.layers[249:]:
@@ -32,7 +32,7 @@ for layer in Backbone.layers[249:]:
 
 model = Sequential()
 
-# °V½m¦Û¤vªº¤ÀÃş¾¹
+# è¨“ç·´è‡ªå·±çš„åˆ†é¡å™¨
 model.add(Backbone)
 model.add(Flatten())
 model.add(Dense(256, activation='relu'))
@@ -41,16 +41,16 @@ model.add(Dense(256, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(256, activation='relu'))
 model.add(Dropout(0.3))
-model.add(Dense(1, activation='sigmoid'))  # class_numbers=4 Á`¦@¦³¥|ºØ¸­¤l
+model.add(Dense(1, activation='sigmoid')) 
 
 model.summary()
 
-# ¸ê®Æ¼W±j¼W¥[¾Ç²ß¼Ë¥»
+# è³‡æ–™å¢å¼·å¢åŠ å­¸ç¿’æ¨£æœ¬
 train_datagen = ImageDataGenerator(
-  rescale=1./255,    # «ü©w±N¼v¶H¹³¯ÀÁY©ñ¨ì0~1¤§¶¡
+  rescale=1./255,    # æŒ‡å®šå°‡å½±è±¡åƒç´ ç¸®æ”¾åˆ°0~1ä¹‹é–“
   # preprocessing_function=preprocess_input,
-  rotation_range=30,  # ¨¤«×­È¡A0~180¡A¼v¶H±ÛÂà
-  width_shift_range=0.45,  # ¤ô¥­¥­²¾¡A¬Û¹ïÁ`¼e«×ªº¤ñ¨Ò
+  rotation_range=30,  # è§’åº¦å€¼ï¼Œ0~180ï¼Œå½±è±¡æ—‹è½‰
+  width_shift_range=0.45,  # æ°´å¹³å¹³ç§»ï¼Œç›¸å°ç¸½å¯¬åº¦çš„æ¯”ä¾‹
   fill_mode='wrap',
   zoom_range=0.6,
   shear_range=0.1
@@ -58,7 +58,7 @@ train_datagen = ImageDataGenerator(
 
 test_datagen = ImageDataGenerator(rescale=1./255)
 
-# °V½m¸ê®Æ»P´ú¸Õ¸ê®Æ  # ¤ÀÃş¶W¹L¨âÃş ¨Ï¥Îcategorical, ­Y¤ÀÃş¥u¦³¨âÃş¨Ï¥Îbinary
+# è¨“ç·´è³‡æ–™èˆ‡æ¸¬è©¦è³‡æ–™  # åˆ†é¡è¶…éå…©é¡ ä½¿ç”¨categorical, è‹¥åˆ†é¡åªæœ‰å…©é¡ä½¿ç”¨binary
 train_generator = train_datagen.flow_from_directory(
 train_dir,
 target_size=(299, 299),
@@ -82,12 +82,12 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['acc']
 # model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['acc'])
 estop = EarlyStopping(monitor='val_loss', patience=3)
 
-# ¨Ï¥Î§å¶q¥Í¦¨¾¹ °V½m¼Ò«¬
+# ä½¿ç”¨æ‰¹é‡ç”Ÿæˆå™¨ è¨“ç·´æ¨¡å‹
 H = model.fit_generator(
 train_generator,
-steps_per_epoch=train_generator.samples/train_generator.batch_size,  # ¨C¤@¦^¦X±q°V½m¶°¤¤§ì¨ú°V½m¼Ë¥»°V½m, Á`¦@°V½m30¦¸
+steps_per_epoch=train_generator.samples/train_generator.batch_size,  # æ¯ä¸€å›åˆå¾è¨“ç·´é›†ä¸­æŠ“å–è¨“ç·´æ¨£æœ¬è¨“ç·´, ç¸½å…±è¨“ç·´30æ¬¡
 epochs=10
-,  # ¤@¦@°V½m¦^¦X
+,  # ä¸€å…±è¨“ç·´å›åˆ
 validation_data=test_generator,
 validation_steps=test_generator.samples/test_generator.batch_size,
 callbacks=[checkpoint, estop],
